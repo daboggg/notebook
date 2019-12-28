@@ -12,7 +12,7 @@ import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;

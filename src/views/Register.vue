@@ -127,7 +127,6 @@ export default {
         try {
           console.log(register)
           await this.$store.dispatch('register', register)
-          this.$router.push('/')
         } catch (e) {
         }
       }

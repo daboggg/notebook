@@ -1,5 +1,25 @@
 <template>
 <v-app>
+  <v-snackbar
+    v-model="snackbar"
+    :bottom="y === 'bottom'"
+    :color="color"
+    :left="x === 'left'"
+    :multi-line="mode === 'multi-line'"
+    :right="x === 'right'"
+    :timeout="timeout"
+    :top="y === 'top'"
+    :vertical="mode === 'vertical'"
+  >
+    {{ text }}
+    <v-btn
+      dark
+      text
+      @click="snackbar = false"
+    >
+      Close
+    </v-btn>
+  </v-snackbar>
   <navbar :drawerCtrl="drawerCtrl"/>
   <sidebar :drawer="drawer" :drawerCtrl="drawerCtrl"/>
   <footerbar/>
@@ -14,7 +34,14 @@ import Footerbar from '../components/app/Footer'
 export default {
   name: 'MainLayout',
   data: () => ({
-    drawer: null
+    drawer: null,
+    color: 'primary',
+    mode: '',
+    snackbar: false,
+    text: 'Hello, I\'m a snackbar',
+    timeout: 6000,
+    x: 'right',
+    y: 'top'
   }),
   methods: {
     drawerCtrl () {
@@ -23,6 +50,32 @@ export default {
   },
   components: {
     Navbar, Sidebar, Footerbar
+  },
+  computed: {
+    error () {
+      return this.$store.getters.error
+    },
+    message () {
+      return this.$store.getters.message
+    }
+  },
+  watch: {
+    error (error) {
+      if (error) {
+        this.color = 'error'
+        this.text = error
+        this.snackbar = true
+      }
+      this.$store.commit('clearError')
+    },
+    message (message) {
+      if (message) {
+        this.color = 'success'
+        this.text = message
+        this.snackbar = true
+      }
+      this.$store.commit('clearMessage')
+    }
   }
 }
 </script>

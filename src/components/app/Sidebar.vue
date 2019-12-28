@@ -31,7 +31,8 @@ export default {
   data: () => ({
     items: [
       { text: 'добавить записку', icon: 'mdi-check-outline', to: '/addnote' },
-      { text: 'домой', icon: 'mdi-check-outline', to: '/' }
+      { text: 'домой', icon: 'mdi-check-outline', to: '/' },
+      { text: 'регистрация', icon: 'mdi-check-outline', to: '/register' }
     ]
   })
 }

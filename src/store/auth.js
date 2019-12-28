@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import router from '../router'
+const ipEndPort = process.env.VUE_APP_SERVERIPENDPORT
 export default {
   state: {
     username: null,
@@ -21,11 +23,28 @@ export default {
   actions: {
     async register ({ commit }, { email, password, username }) {
       try {
-        const res = await Vue.http.post('http://localhost:8080/user/register',
+        const res = await Vue.http.post(`${ipEndPort}api/user/register`,
           JSON.stringify({ email: email, password: password, username: username }),
           { 'Content-Type': 'application/json' })
         const data = await res.json()
         commit('login', { username: data.username, token: data.token })
+        await router.push('/')
+        commit('setMessage', 'registration successful')
+        console.log(data)
+      } catch (e) {
+        commit('setError', e.body.message)
+        // console.log(e.body.message)
+        throw e
+      }
+    },
+    async login ({ commit }, { email, password }) {
+      try {
+        const res = await Vue.http.post(`${ipEndPort}api/user/login`,
+          JSON.stringify({ email: email, password: password }),
+          { 'Content-Type': 'application/json' })
+        const data = await res.json()
+        commit('login', { username: data.username, token: data.token })
+        await router.push('/')
         console.log(data)
       } catch (e) {
         commit('setError', e.body.message)

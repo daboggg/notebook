@@ -45,7 +45,7 @@ public class UserService {
             throw new UserNotFound(user.getEmail());
         } else {
             if (!userFromDb.getPassword().equals(user.getPassword())) {
-                throw new WrongPassword(user.getPassword());
+                throw new WrongPassword();
             } else {
                 userFromDb = tokenFactory.setToken(userFromDb);
                 return ResponseEntity.ok(userFromDb);

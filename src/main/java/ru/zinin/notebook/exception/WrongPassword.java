@@ -5,9 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
 public class WrongPassword extends Exception {
-    private String password;
-
-    public WrongPassword(String password) {
-        super(String.format("wrong password: '%s'", password));
+    public WrongPassword() {
+        super("wrong password");
     }
 }
