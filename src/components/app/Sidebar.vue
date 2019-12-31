@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    v-model="drawer"
+    v-model="openDrawer"
     app
     clipped
     temporary
@@ -11,7 +11,7 @@
         v-for="(item, idx) in items"
         :key="idx"
         :to="item.to"
-        @click="drawerCtrl"
+        @click="$emit('drawerCtrl')"
       >
         <v-list-item-action>
           <v-icon>{{item.icon}}</v-icon>
@@ -27,14 +27,19 @@
 <script>
 export default {
   name: 'Sidebar',
-  props: ['drawer', 'drawerCtrl'],
+  props: ['drawer'],
   data: () => ({
+    openDrawer: null,
     items: [
-      { text: 'добавить записку', icon: 'mdi-check-outline', to: '/addnote' },
-      { text: 'домой', icon: 'mdi-check-outline', to: '/' },
-      { text: 'регистрация', icon: 'mdi-check-outline', to: '/register' }
+      { text: 'блокноты', icon: 'mdi-notebook', to: '/notebooks' },
+      { text: 'домой', icon: 'mdi-check-outline', to: '/' }
     ]
-  })
+  }),
+  watch: {
+    drawer () {
+      this.openDrawer = this.drawer
+    }
+  }
 }
 </script>
 

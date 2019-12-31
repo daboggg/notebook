@@ -113,6 +113,14 @@ export default {
         }
       }
     }
+  },
+  mounted () {
+    if (this.$route.query.message) {
+      if (this.$route.query.message === 'you are out') {
+        this.$store.commit('logout')
+        this.$store.commit('setMessage', 'you are out')
+      }
+    }
   }
 }
 </script>

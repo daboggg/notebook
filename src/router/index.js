@@ -22,6 +22,18 @@ const routes = [
     name: 'home',
     meta: { layout: 'main', auth: true },
     component: () => import('../views/Home.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    meta: { layout: 'main', auth: true },
+    component: () => import('../views/Profile.vue')
+  },
+  {
+    path: '/notebooks',
+    name: 'notebooks',
+    meta: { layout: 'main', auth: true },
+    component: () => import('../views/Notebooks.vue')
   }
 ]
 

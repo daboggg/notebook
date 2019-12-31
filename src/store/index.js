@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './auth'
+import notebook from './notebook'
 
 Vue.use(Vuex)
 
@@ -30,6 +31,6 @@ export default new Vuex.Store({
     message: state => state.message
   },
   modules: {
-    auth
+    auth, notebook
   }
 })

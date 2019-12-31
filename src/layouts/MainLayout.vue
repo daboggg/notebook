@@ -21,7 +21,7 @@
     </v-btn>
   </v-snackbar>
   <navbar :drawerCtrl="drawerCtrl"/>
-  <sidebar :drawer="drawer" :drawerCtrl="drawerCtrl"/>
+  <sidebar :drawer="drawer" v-on:drawerCtrl="drawerCtrl"/>
   <footerbar/>
   <router-view/>
 </v-app>
