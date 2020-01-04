@@ -28,29 +28,36 @@
             popout
           >
             <v-expansion-panel
-              v-for="(item,i) in 20"
+              v-for="(notebook,i) in notebooks"
               :key="i"
+              @click="openNotebook(notebook.id)"
             >
               <v-expansion-panel-header
                 class="title"
               >
                 <div>
                   <v-icon large class="mr-3">mdi-notebook</v-icon>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magnam, nostrum.
+                  {{notebook.notebookName}}
                 </div>
-                <div>
-                  <v-icon large class="">mdi-pen</v-icon>
+                <v-spacer/>
+                <div align="right" justify="right">
+                  <v-icon large class="mt-2" @click.stop="edit(notebook.id, notebook.notebookName)">mdi-pen</v-icon>
                   <v-icon large class="mt-2">mdi-delete</v-icon>
                 </div>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                <note :notes="notes" :notebookId="notebook.id"/>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
           <creation-notebook
             :showDialogCreateNotebook="showDialogCreateNotebook"
             v-on:dialog="showDialogCreateNotebook = !showDialogCreateNotebook"
+          />
+          <edition-notebook
+            :editParam="editParam"
+            :showDialogEditNotebook="showDialogEditNotebook"
+            v-on:dialog="showDialogEditNotebook = !showDialogEditNotebook"
           />
         </v-col>
       </v-row>
@@ -59,15 +66,37 @@
 
 <script>
 import CreationNotebook from '../components/dialog/CreationNotebook'
+import EditionNotebook from '../components/dialog/EditionNotebook'
+import Note from '../components/Note'
 export default {
   name: 'Notebooks',
   data: () => ({
-    showDialogCreateNotebook: false
+    showDialogCreateNotebook: false,
+    showDialogEditNotebook: false,
+    editParam: {}
   }),
   methods: {
+    edit (id, notebookName) {
+      this.editParam = { id, notebookName }
+      this.showDialogEditNotebook = !this.showDialogEditNotebook
+    },
+    async openNotebook (notebookId) {
+      await this.$store.dispatch('getAllNotes', notebookId)
+    }
+  },
+  mounted () {
+    this.$store.dispatch('getAllNotebooks')
+  },
+  computed: {
+    notebooks () {
+      return this.$store.getters.getAllNotebooks
+    },
+    notes () {
+      return this.$store.getters.getNotes
+    }
   },
   components: {
-    CreationNotebook
+    CreationNotebook, EditionNotebook, Note
   }
 }
 </script>

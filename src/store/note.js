@@ -3,24 +3,25 @@ import router from '../router'
 const ipEndPort = process.env.VUE_APP_SERVERIPENDPORT
 export default {
   state: {
-    notebooks: []
+    notes: []
   },
   mutations: {
-    getAllNotebooks (state, notebooks) {
-      state.notebooks = notebooks
+    addNote (state, note) {
+      state.notes.push(note)
     },
-    addNotebook (state, notebook) {
-      state.notebooks.push(notebook)
+    setNotes (state, notes) {
+      state.notes = notes
     },
-    editNotebook (state, notebook) {
-      const idx = state.notebooks.findIndex(n => n.id === notebook.id)
-      state.notebooks.splice(idx, 1, notebook)
+    editNote (state, note) {
+      let index = state.notes.findIndex(n => n.id === note.id)
+      state.notes.splice(index, 1, note)
     }
   },
   actions: {
-    async getAllNotebooks ({ commit, getters }) {
+    async getAllNotes ({ commit, getters }, notebookId) {
+      console.log(notebookId)
       try {
-        const res = await Vue.http.get(`${ipEndPort}api/notebook`,
+        const res = await Vue.http.get(`${ipEndPort}api/note?notebookId=${notebookId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -28,8 +29,10 @@ export default {
             }
           })
         const data = await res.json()
-        console.log(data)
-        commit('getAllNotebooks', data)
+        commit('setNotes', data)
+        // commit('setMessage', 'note added')
+        // console.log('a1a1a1')
+        // console.log(data)
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')
@@ -42,10 +45,12 @@ export default {
         }
       }
     },
-    async createNotebook ({ commit, getters }, notebookName) {
+    async createNote ({ commit, getters }, { notebookId, title, text }) {
       try {
-        const res = await Vue.http.post(`${ipEndPort}api/notebook`,
-          JSON.stringify({ notebookName: notebookName }),
+        const res = await Vue.http.post(`${ipEndPort}api/note`,
+          JSON.stringify({
+            notebookId, title, text
+          }),
           {
             headers: {
               'Content-Type': 'application/json',
@@ -53,9 +58,8 @@ export default {
             }
           })
         const data = await res.json()
-        commit('addNotebook', data)
-        commit('setMessage', 'notepad created')
-        console.log(data)
+        commit('addNote', data)
+        commit('setMessage', 'note added')
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')
@@ -68,11 +72,12 @@ export default {
         }
       }
     },
-    async editNotebook ({ commit, getters }, { id, notebookName }) {
+    async editNote ({ commit, getters }, { noteId, title, text }) {
       try {
-        console.log('SSSSSSS: ' + notebookName)
-        const res = await Vue.http.put(`${ipEndPort}api/notebook/${id}/${notebookName}`,
-          JSON.stringify({}),
+        const res = await Vue.http.put(`${ipEndPort}api/note`,
+          JSON.stringify({
+            id: noteId, title, text
+          }),
           {
             headers: {
               'Content-Type': 'application/json',
@@ -80,8 +85,8 @@ export default {
             }
           })
         const data = await res.json()
-        commit('editNotebook', data)
-        commit('setMessage', 'notepad edited')
+        commit('editNote', data)
+        // commit('setMessage', 'note added')
         console.log(data)
       } catch (e) {
         if (e.body.message === 'invalid token') {
@@ -97,6 +102,6 @@ export default {
     }
   },
   getters: {
-    getAllNotebooks: state => state.notebooks
+    getNotes: state => state.notes
   }
 }

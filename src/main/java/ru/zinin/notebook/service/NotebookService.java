@@ -8,6 +8,8 @@ import ru.zinin.notebook.exception.InvalidToken;
 import ru.zinin.notebook.model.Notebook;
 import ru.zinin.notebook.repo.NotebookRepo;
 
+import java.util.List;
+
 @Service
 public class NotebookService {
 
@@ -27,7 +29,29 @@ public class NotebookService {
         tokenFactory.updateTimeValidityToken();
 
         notebook.setCreationDate(System.currentTimeMillis());
+        notebook.setUserId(tokenFactory.getUserId());
         Notebook saveNotebook = notebookRepo.save(notebook);
         return ResponseEntity.ok(saveNotebook);
+    }
+
+    public List<Notebook> getAll() throws InvalidToken {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        Long userId = tokenFactory.getUserId();
+        return notebookRepo.getAllByUserId(userId);
+    }
+
+    public ResponseEntity<Notebook> edit(Notebook notebook, String notebookName) throws InvalidToken {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        notebook.setNotebookName(notebookName);
+        Notebook notebookFromDb = notebookRepo.save(notebook);
+        return ResponseEntity.ok(notebookFromDb);
     }
 }

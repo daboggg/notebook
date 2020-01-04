@@ -3,14 +3,13 @@ package ru.zinin.notebook.component;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.zinin.notebook.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class TokenFactory {
@@ -45,7 +44,7 @@ public class TokenFactory {
         tokenHolder.setCreationTimeToken(System.currentTimeMillis());
         tokenHolder.setUserId(userFromDb.getId());
         tokenHolders.add(tokenHolder);
-        System.out.println(tokenHolders.size());
+        System.out.println("records in tokenHolders: " + tokenHolders.size());
         return userFromDb;
     }
 
@@ -69,11 +68,36 @@ public class TokenFactory {
         return true;
     }
 
+    // продляет время валидности токена
     public void updateTimeValidityToken() {
         String tokenFromHeader = request.getHeader("Token");
         for (TokenHolder tokenHolder : tokenHolders) {
             if (tokenHolder.getToken().equals(tokenFromHeader)) {
                 tokenHolder.setCreationTimeToken(System.currentTimeMillis());
+            }
+        }
+    }
+
+    // возвращает Id юзера
+    public Long getUserId() {
+        String tokenFromHeader = request.getHeader("Token");
+        for (TokenHolder tokenHolder : tokenHolders) {
+            if (tokenHolder.getToken().equals(tokenFromHeader)) {
+                return tokenHolder.getUserId();
+            }
+        }
+        return null;
+    }
+
+    // по расписанию очищает tokenHolders
+    @Scheduled(cron = "0 0 * * * ?")
+    public void reportCurrentTime() {
+
+        Iterator<TokenHolder> iterator = tokenHolders.iterator();
+        while (iterator.hasNext()) {
+            TokenHolder next = iterator.next();
+            if ((next.getCreationTimeToken() + timeValidityToken) < System.currentTimeMillis()) {
+                iterator.remove();
             }
         }
     }

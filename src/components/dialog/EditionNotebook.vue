@@ -9,7 +9,7 @@
         dense
 
       >
-        <v-toolbar-title class="title">Создать блокнот</v-toolbar-title>
+        <v-toolbar-title class="title">Редактировать блокнот</v-toolbar-title>
         <v-spacer/>
         <v-icon @click="$emit('dialog')">close</v-icon>
       </v-app-bar>
@@ -42,7 +42,7 @@
           type="submit"
           @click="validate"
         >
-          <!--<v-icon left>mdi-notebook</v-icon>--> Создать
+          <!--<v-icon left>mdi-notebook</v-icon>--> Редактировать
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -51,8 +51,8 @@
 
 <script>
 export default {
-  name: 'CreationNotebook',
-  props: ['showDialogCreateNotebook'],
+  name: 'EditionNotebook',
+  props: ['showDialogEditNotebook', 'editParam'],
   data: () => ({
     valid: true,
     notebookName: '',
@@ -65,7 +65,10 @@ export default {
     async validate () {
       if (this.$refs.form.validate()) {
         try {
-          await this.$store.dispatch('createNotebook', this.notebookName)
+          await this.$store.dispatch('editNotebook', {
+            id: this.editParam.id,
+            notebookName: this.notebookName
+          })
           this.$refs.form.reset()
           this.$refs.form.resetValidation()
           this.$emit('dialog')
@@ -76,7 +79,13 @@ export default {
   },
   computed: {
     dialog () {
-      return this.showDialogCreateNotebook
+      let editNotebook = this.showDialogEditNotebook
+      return editNotebook
+    }
+  },
+  watch: {
+    editParam () {
+      this.notebookName = this.editParam.notebookName
     }
   }
 }
