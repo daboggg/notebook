@@ -1,10 +1,13 @@
 package ru.zinin.notebook.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.zinin.notebook.exception.InvalidToken;
+import ru.zinin.notebook.exception.SomeException;
 import ru.zinin.notebook.model.Note;
+import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.NoteService;
 
 import java.util.List;
@@ -22,12 +25,14 @@ public class NoteController {
 
     @GetMapping
     @CrossOrigin(methods = RequestMethod.GET)
-    public List<Note> getAll(@RequestParam Long notebookId) throws InvalidToken {
+    @JsonView(Views.IdTitleTextNotebookId.class)
+    public List<Note> getAll(@RequestParam Long notebookId) throws InvalidToken, SomeException {
         return noteService.getAll(notebookId);
     }
 
     @PostMapping
     @CrossOrigin(methods = RequestMethod.POST)
+    @JsonView(Views.IdTitleTextNotebookId.class)
     public ResponseEntity<Note> create(@RequestBody Note note) throws InvalidToken {
 
         return noteService.create(note);
@@ -35,7 +40,8 @@ public class NoteController {
 
     @PutMapping
     @CrossOrigin(methods = RequestMethod.PUT)
-    public ResponseEntity<Note> edit(@RequestBody Note note) throws InvalidToken {
+    @JsonView(Views.IdTitleTextNotebookId.class)
+    public ResponseEntity<Note> edit(@RequestBody Note note) throws InvalidToken, SomeException {
         return noteService.edit(note);
     }
 }

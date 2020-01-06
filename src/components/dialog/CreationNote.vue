@@ -4,14 +4,23 @@
     v-model="dialog"
     persistent
   >
+
+    <template v-slot:activator="{ on }">
+      <v-btn
+        small
+        v-on="on"
+      >
+        <v-icon class="mr-2">mdi-note-plus</v-icon>Новая запись
+      </v-btn>
+    </template>
+
     <v-card elevation="12">
       <v-app-bar
         dense
-
       >
         <v-toolbar-title class="title">Добавить запись</v-toolbar-title>
         <v-spacer/>
-        <v-icon @click="$emit('dialog')">close</v-icon>
+        <v-icon @click="dialog = false">close</v-icon>
       </v-app-bar>
       <v-form
         ref="form"
@@ -65,8 +74,9 @@
 <script>
 export default {
   name: 'CreationNote',
-  props: ['showDialogCreateNote', 'notebookId'],
+  props: ['notebookId'],
   data: () => ({
+    dialog: false,
     valid: true,
     title: '',
     text: '',
@@ -84,15 +94,10 @@ export default {
           await this.$store.dispatch('createNote', { notebookId: this.notebookId, title: this.title, text: this.text })
           this.$refs.form.reset()
           this.$refs.form.resetValidation()
-          this.$emit('dialog')
+          this.dialog = false
         } catch (e) {
         }
       }
-    }
-  },
-  computed: {
-    dialog () {
-      return this.showDialogCreateNote
     }
   }
 }

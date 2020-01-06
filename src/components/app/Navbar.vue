@@ -41,7 +41,6 @@ export default {
   }),
   computed: {
     username () {
-      console.log('AAAAA' + this.$store.getters.getUsername)
       return this.$store.getters.getUsername
     }
   }

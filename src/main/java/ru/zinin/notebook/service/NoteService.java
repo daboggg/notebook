@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.zinin.notebook.component.TokenFactory;
 import ru.zinin.notebook.exception.InvalidToken;
+import ru.zinin.notebook.exception.SomeException;
 import ru.zinin.notebook.model.Note;
 import ru.zinin.notebook.repo.NoteRepo;
 
@@ -22,6 +23,26 @@ public class NoteService {
         this.tokenFactory = tokenFactory;
     }
 
+    public List<Note> getAll(Long notebookId) throws InvalidToken, SomeException {
+
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        List<Note> allByNotebookId = noteRepo.getAllByNotebookId(notebookId);
+        Long userId = tokenFactory.getUserId();
+
+        //проверяем на подмену userId
+        for (Note note : allByNotebookId) {
+            if (!note.getUserId().equals(userId)) {
+                throw new SomeException("userId wrong");
+            }
+        }
+
+        return allByNotebookId;
+    }
+
     public ResponseEntity<Note> create(Note note) throws InvalidToken {
 
         if (!tokenFactory.isValidToken()) {
@@ -30,20 +51,11 @@ public class NoteService {
         tokenFactory.updateTimeValidityToken();
 
         note.setCreationTime(System.currentTimeMillis());
+        note.setUserId(tokenFactory.getUserId());
         return ResponseEntity.ok(noteRepo.save(note));
     }
 
-    public List<Note> getAll(Long notebookId) throws InvalidToken {
-
-        if (!tokenFactory.isValidToken()) {
-            throw new InvalidToken();
-        }
-        tokenFactory.updateTimeValidityToken();
-
-        return noteRepo.getAllByNotebookId(notebookId);
-    }
-
-    public ResponseEntity<Note> edit(Note note) throws InvalidToken {
+    public ResponseEntity<Note> edit(Note note) throws InvalidToken, SomeException {
 
         if (!tokenFactory.isValidToken()) {
             throw new InvalidToken();
@@ -51,6 +63,11 @@ public class NoteService {
         tokenFactory.updateTimeValidityToken();
 
         Note noteById = noteRepo.getById(note.getId());
+
+        if (!noteById.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong");
+        }
+
         noteById.setTitle(note.getTitle());
         noteById.setText(note.getText());
 

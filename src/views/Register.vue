@@ -125,7 +125,6 @@ export default {
           password: tmpPassword
         }
         try {
-          console.log(register)
           await this.$store.dispatch('register', register)
         } catch (e) {
         }

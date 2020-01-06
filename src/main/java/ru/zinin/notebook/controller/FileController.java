@@ -1,14 +1,12 @@
 package ru.zinin.notebook.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,15 +17,24 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @RestController
+@RequestMapping("/api/file")
 public class FileController {
-    @PostMapping("/upload")
+
+    @Value(value = "${upload.path}")
+    private String partPath;
+
+    @PostMapping
+    @CrossOrigin(methods = RequestMethod.POST)
     public String uploadFile(@RequestParam MultipartFile file) throws IOException {
-        File saveFile = new File("/home/ubuntu/store/");
-        if (!saveFile.exists()) {
-            System.out.println(saveFile.mkdir());
-        }
-        Path path = Paths.get(saveFile.getAbsolutePath() + "/" + file.getOriginalFilename());
-        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+        Path path = Paths.get(partPath + file.getOriginalFilename());
+        System.out.println(path);
+        //        File saveFile = new File("/home/ubuntu/store/");
+//        if (!saveFile.exists()) {
+//            System.out.println(saveFile.mkdir());
+//        }
+//        Path path = Paths.get(saveFile.getAbsolutePath() + "/" + file.getOriginalFilename());
+//        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         return "все ок";
     }
 

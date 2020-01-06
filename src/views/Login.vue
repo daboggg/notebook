@@ -107,7 +107,6 @@ export default {
           password: tmpPassword
         }
         try {
-          console.log(login)
           await this.$store.dispatch('login', login)
         } catch (e) {
         }

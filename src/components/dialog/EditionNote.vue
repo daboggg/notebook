@@ -4,14 +4,23 @@
     v-model="dialog"
     persistent
   >
+
+    <template v-slot:activator="{ on }">
+      <v-btn
+        text
+        v-on="on"
+      >
+        <v-icon>mdi-pen</v-icon>
+      </v-btn>
+    </template>
+
     <v-card elevation="12">
       <v-app-bar
         dense
-
       >
         <v-toolbar-title class="title">Редактировать запись</v-toolbar-title>
         <v-spacer/>
-        <v-icon @click="$emit('dialog')">close</v-icon>
+        <v-icon @click="dialog = false">close</v-icon>
       </v-app-bar>
       <v-form
         ref="form"
@@ -65,8 +74,9 @@
 <script>
 export default {
   name: 'EditionNote',
-  props: ['showDialogEditNote', 'editParam'],
+  props: ['editParam'],
   data: () => ({
+    dialog: false,
     valid: true,
     title: '',
     titleRules: [
@@ -86,25 +96,17 @@ export default {
             title: this.title,
             text: this.text
           })
-          this.$refs.form.reset()
+          // this.$refs.form.reset()
           this.$refs.form.resetValidation()
-          this.$emit('dialog')
+          this.dialog = false
         } catch (e) {
         }
       }
     }
   },
-  computed: {
-    dialog () {
-      let editNotebook = this.showDialogEditNote
-      return editNotebook
-    }
-  },
-  watch: {
-    editParam () {
-      this.title = this.editParam.title
-      this.text = this.editParam.text
-    }
+  mounted () {
+    this.title = this.editParam.title
+    this.text = this.editParam.text
   }
 }
 </script>

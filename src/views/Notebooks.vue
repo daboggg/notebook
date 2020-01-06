@@ -18,9 +18,7 @@
               justify="center"
               class="mr-4"
             >
-              <v-btn @click="showDialogCreateNotebook = !showDialogCreateNotebook">
-                <v-icon class="mr-2">mdi-notebook</v-icon>Новый блокнот
-              </v-btn>
+              <creation-notebook/>
             </v-col>
           </v-row>
           <v-expansion-panels
@@ -41,7 +39,7 @@
                 </div>
                 <v-spacer/>
                 <div align="right" justify="right">
-                  <v-icon large class="mt-2" @click.stop="edit(notebook.id, notebook.notebookName)">mdi-pen</v-icon>
+                  <edition-notebook :editParam="{ id: notebook.id, notebookName: notebook.notebookName }"/>
                   <v-icon large class="mt-2">mdi-delete</v-icon>
                 </div>
               </v-expansion-panel-header>
@@ -50,15 +48,6 @@
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
-          <creation-notebook
-            :showDialogCreateNotebook="showDialogCreateNotebook"
-            v-on:dialog="showDialogCreateNotebook = !showDialogCreateNotebook"
-          />
-          <edition-notebook
-            :editParam="editParam"
-            :showDialogEditNotebook="showDialogEditNotebook"
-            v-on:dialog="showDialogEditNotebook = !showDialogEditNotebook"
-          />
         </v-col>
       </v-row>
     </v-container>
@@ -71,7 +60,6 @@ import Note from '../components/Note'
 export default {
   name: 'Notebooks',
   data: () => ({
-    showDialogCreateNotebook: false,
     showDialogEditNotebook: false,
     editParam: {}
   }),

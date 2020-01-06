@@ -30,7 +30,6 @@ export default {
         commit('login', { username: data.username, token: data.token })
         await router.push('/')
         commit('setMessage', 'registration successful')
-        console.log(data)
       } catch (e) {
         commit('setError', e.body.message)
         // console.log(e.body.message)
@@ -45,7 +44,6 @@ export default {
         const data = await res.json()
         commit('login', { username: data.username, token: data.token })
         await router.push('/')
-        console.log(data)
       } catch (e) {
         commit('setError', e.body.message)
         console.log(e.body.message)

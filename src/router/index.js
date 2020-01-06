@@ -34,6 +34,12 @@ const routes = [
     name: 'notebooks',
     meta: { layout: 'main', auth: true },
     component: () => import('../views/Notebooks.vue')
+  },
+  {
+    path: '/test',
+    name: 'test',
+    meta: { layout: 'main', auth: true },
+    component: () => import('../views/Test.vue')
   }
 ]
 

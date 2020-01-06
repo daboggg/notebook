@@ -28,7 +28,6 @@ export default {
             }
           })
         const data = await res.json()
-        console.log(data)
         commit('getAllNotebooks', data)
       } catch (e) {
         if (e.body.message === 'invalid token') {
@@ -70,7 +69,6 @@ export default {
     },
     async editNotebook ({ commit, getters }, { id, notebookName }) {
       try {
-        console.log('SSSSSSS: ' + notebookName)
         const res = await Vue.http.put(`${ipEndPort}api/notebook/${id}/${notebookName}`,
           JSON.stringify({}),
           {
@@ -82,7 +80,6 @@ export default {
         const data = await res.json()
         commit('editNotebook', data)
         commit('setMessage', 'notepad edited')
-        console.log(data)
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')

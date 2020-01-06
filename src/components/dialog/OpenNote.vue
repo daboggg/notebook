@@ -3,14 +3,25 @@
     v-model="dialog"
     persistent
   >
+
+    <template v-slot:activator="{ on }">
+      <v-btn
+        text
+        v-on="on"
+      >
+        открыть
+      </v-btn>
+    </template>
+
     <v-card elevation="12">
       <v-app-bar
         dense
       >
         <v-toolbar-title class="title">Запись</v-toolbar-title>
         <v-spacer/>
-        <v-icon @click="$emit('dialog')">close</v-icon>
+        <v-icon @click="dialog = false">close</v-icon>
       </v-app-bar>
+
       <v-row align="center">
         <v-col cols="12" md="5" class="pa-10">
           <v-card elevation="5">
@@ -29,10 +40,10 @@
             class="pa-5"
           >
             <div class="title">Имя записи:</div>
-            <div class="my-4 ml-10 subtitle-1">ячсячсsd sdkjdlsdkfj </div>
+            <div class="my-4 ml-10 subtitle-1">{{ editParam.title }}</div>
             <v-divider></v-divider>
             <div class="title">Текст записи:</div>
-            <div class="my-4 ml-10 subtitle-1">ячсячсsd sdkjdlsdkfj </div>
+            <div class="my-4 ml-10 subtitle-1">{{ editParam.text }}</div>
             <v-divider></v-divider>
             <div class="title">Список файлов:</div>
 
@@ -67,8 +78,9 @@
 <script>
 export default {
   name: 'OpenNote',
-  props: ['showDialogOpenNote'],
+  props: ['editParam'],
   data: () => ({
+    dialog: false,
     item: 0,
     items: [
       { text: 'My Files', icon: 'mdi-folder' },
@@ -79,12 +91,6 @@ export default {
       { text: 'Uploads', icon: 'mdi-upload' },
       { text: 'Backups', icon: 'mdi-cloud-upload' }
     ]
-    // valid: true,
-    // notebookName: '',
-    // notebookNameRules: [
-    //   v => !!v || 'поле не может быть пустым',
-    //   v => (v && v.length > 3) || 'название блокнота не может быть короче 4 символов'
-    // ]
   }),
   methods: {
     // async validate () {
@@ -101,16 +107,6 @@ export default {
     //     }
     //   }
     // }
-  },
-  computed: {
-    dialog () {
-      return this.showDialogOpenNote
-    }
-  },
-  watch: {
-    editParam () {
-      // this.notebookName = this.editParam.notebookName
-    }
   }
 }
 </script>

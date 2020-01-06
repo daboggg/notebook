@@ -4,6 +4,11 @@
     v-model="dialog"
     persistent
   >
+
+    <template v-slot:activator="{ on }">
+      <v-icon class="mt-2" @click.stop="" large v-on="on">mdi-pen</v-icon>
+    </template>
+
     <v-card elevation="12">
       <v-app-bar
         dense
@@ -11,7 +16,7 @@
       >
         <v-toolbar-title class="title">Редактировать блокнот</v-toolbar-title>
         <v-spacer/>
-        <v-icon @click="$emit('dialog')">close</v-icon>
+        <v-icon @click="dialog = false">close</v-icon>
       </v-app-bar>
       <v-form
         ref="form"
@@ -42,7 +47,7 @@
           type="submit"
           @click="validate"
         >
-          <!--<v-icon left>mdi-notebook</v-icon>--> Редактировать
+          Редактировать
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -52,8 +57,9 @@
 <script>
 export default {
   name: 'EditionNotebook',
-  props: ['showDialogEditNotebook', 'editParam'],
+  props: ['editParam'],
   data: () => ({
+    dialog: false,
     valid: true,
     notebookName: '',
     notebookNameRules: [
@@ -69,24 +75,16 @@ export default {
             id: this.editParam.id,
             notebookName: this.notebookName
           })
-          this.$refs.form.reset()
+          // this.$refs.form.reset()
           this.$refs.form.resetValidation()
-          this.$emit('dialog')
+          this.dialog = false
         } catch (e) {
         }
       }
     }
   },
-  computed: {
-    dialog () {
-      let editNotebook = this.showDialogEditNotebook
-      return editNotebook
-    }
-  },
-  watch: {
-    editParam () {
-      this.notebookName = this.editParam.notebookName
-    }
+  mounted () {
+    this.notebookName = this.editParam.notebookName
   }
 }
 </script>

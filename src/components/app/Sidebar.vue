@@ -32,7 +32,8 @@ export default {
     openDrawer: null,
     items: [
       { text: 'блокноты', icon: 'mdi-notebook', to: '/notebooks' },
-      { text: 'домой', icon: 'mdi-check-outline', to: '/' }
+      { text: 'домой', icon: 'mdi-check-outline', to: '/' },
+      { text: 'тест', icon: 'mdi-check-outline', to: '/test' }
     ]
   }),
   watch: {

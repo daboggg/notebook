@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.zinin.notebook.exception.InvalidToken;
+import ru.zinin.notebook.exception.SomeException;
 import ru.zinin.notebook.model.Notebook;
 import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.NotebookService;
@@ -43,7 +44,7 @@ public class NotebookController {
     public ResponseEntity<Notebook> edit(
             @PathVariable(name = "id") Notebook notebook,
             @PathVariable String notebookName
-            ) throws InvalidToken {
+            ) throws InvalidToken, SomeException {
         return notebookService.edit(notebook, notebookName);
     }
 }

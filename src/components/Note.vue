@@ -2,9 +2,7 @@
   <div>
     <v-row>
       <v-col class="mt-3" align="right" justify="right">
-        <v-btn small @click="showDialogCreateNote = !showDialogCreateNote">
-          <v-icon class="mr-2">mdi-note-plus</v-icon>Новая запись
-        </v-btn>
+        <creation-note :notebookId="notebookId"/>
       </v-col>
     </v-row>
     <v-row
@@ -23,17 +21,16 @@
         ></v-img>
 
         <v-card-title>
-          {{note.title}}
+          {{note.title.length>13? note.title.substring(0,12) + '...' : note.title}}
         </v-card-title>
 
         <v-card-subtitle>
-          {{note.text}}
+          {{note.text.length>19? note.text.substring(0,18) + '...' : note.text}}
         </v-card-subtitle>
 
         <v-card-actions>
-          <v-btn text @click="edit(note.id, note.title, note.text)">
-            <v-icon>mdi-pen</v-icon>
-          </v-btn>
+
+          <edition-note :editParam="{ noteId:note.id, title:note.title, text:note.text }"/>
 
           <v-btn text>
             <v-icon>mdi-delete</v-icon>
@@ -41,27 +38,11 @@
 
           <v-spacer></v-spacer>
 
-          <v-btn text @click="showDialogOpenNote = !showDialogOpenNote">
-            открыть
-          </v-btn>
+          <open-note :editParam="{ noteId:note.id, title:note.title, text:note.text }"/>
 
         </v-card-actions>
       </v-card>
     </v-row>
-    <creation-note
-      :showDialogCreateNote="showDialogCreateNote"
-      v-on:dialog="showDialogCreateNote = !showDialogCreateNote"
-      :notebookId="notebookId"
-    />
-    <edition-note
-      :showDialogEditNote="showDialogEditNote"
-      v-on:dialog="showDialogEditNote = !showDialogEditNote"
-      :editParam="editParam"
-    />
-    <open-note
-      :showDialogOpenNote="showDialogOpenNote"
-      v-on:dialog="showDialogOpenNote = !showDialogOpenNote"
-    />
   </div>
 </template>
 
@@ -73,17 +54,8 @@ export default {
   name: 'Note',
   props: ['notebookId', 'notes'],
   data: () => ({
-    showDialogCreateNote: false,
-    showDialogEditNote: false,
-    showDialogOpenNote: false,
     editParam: {}
   }),
-  methods: {
-    edit (noteId, title, text) {
-      this.editParam = { noteId, title, text }
-      this.showDialogEditNote = !this.showDialogEditNote
-    }
-  },
   components: {
     CreationNote, EditionNote, OpenNote
   }
