@@ -8,8 +8,9 @@
       <v-btn
         text
         v-on="on"
+        @click="getFiles"
       >
-        открыть
+        <span class="grey--text text--darken-2">открыть</span>
       </v-btn>
     </template>
 
@@ -54,15 +55,16 @@
             >
               <v-list-item-group v-model="item" color="primary">
                 <v-list-item
-                  v-for="(item, i) in items"
+                  v-for="(file, i) in files"
                   :key="i"
+                  @click="downloadFile(file.id)"
                 >
                   <v-list-item-icon>
-                    <v-icon v-text="item.icon"></v-icon>
+                    <v-icon>mdi-file-document-box</v-icon>
                   </v-list-item-icon>
 
                   <v-list-item-content>
-                    <v-list-item-title v-text="item.text"></v-list-item-title>
+                    <v-list-item-title v-text="file.fileName"></v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
@@ -81,18 +83,15 @@ export default {
   props: ['editParam'],
   data: () => ({
     dialog: false,
-    item: 0,
-    items: [
-      { text: 'My Files', icon: 'mdi-folder' },
-      { text: 'Shared with me', icon: 'mdi-account-multiple' },
-      { text: 'Starred', icon: 'mdi-star' },
-      { text: 'Recent', icon: 'mdi-history' },
-      { text: 'Offline', icon: 'mdi-check-circle' },
-      { text: 'Uploads', icon: 'mdi-upload' },
-      { text: 'Backups', icon: 'mdi-cloud-upload' }
-    ]
+    item: 0
   }),
   methods: {
+    async getFiles () {
+      await this.$store.dispatch('getAllFiles', this.editParam.noteId)
+    },
+    async downloadFile (fileId) {
+      await this.$store.dispatch('downloadFile', fileId)
+    }
     // async validate () {
     //   if (this.$refs.form.validate()) {
     //     try {
@@ -107,6 +106,11 @@ export default {
     //     }
     //   }
     // }
+  },
+  computed: {
+    files () {
+      return this.$store.getters.getFiles
+    }
   }
 }
 </script>

@@ -7,7 +7,7 @@
 
     <template v-slot:activator="{ on }">
       <v-btn
-        text
+        icon
         v-on="on"
       >
         <v-icon>mdi-pen</v-icon>

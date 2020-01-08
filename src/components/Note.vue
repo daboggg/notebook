@@ -32,9 +32,14 @@
 
           <edition-note :editParam="{ noteId:note.id, title:note.title, text:note.text }"/>
 
-          <v-btn text>
+          <v-btn icon>
             <v-icon>mdi-delete</v-icon>
           </v-btn>
+
+<!--          <v-btn icon>-->
+<!--            <v-icon>mdi-file-document-box-plus</v-icon>-->
+<!--          </v-btn>-->
+          <add-file :noteId="note.id"/>
 
           <v-spacer></v-spacer>
 
@@ -50,6 +55,7 @@
 import CreationNote from './dialog/CreationNote'
 import EditionNote from './dialog/EditionNote'
 import OpenNote from './dialog/OpenNote'
+import AddFile from './dialog/AddFile'
 export default {
   name: 'Note',
   props: ['notebookId', 'notes'],
@@ -57,7 +63,7 @@ export default {
     editParam: {}
   }),
   components: {
-    CreationNote, EditionNote, OpenNote
+    CreationNote, EditionNote, OpenNote, AddFile
   }
 }
 </script>

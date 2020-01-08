@@ -11,12 +11,17 @@ import java.nio.file.attribute.FileAttribute;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-        Path testFilePath = Paths.get("/home/daboggg/aqwerty/test.txt");
-        if (!Files.exists(testFilePath.getParent())) {
-            System.out.println(" not exist");
-            Files.createDirectories(testFilePath.getParent());
-            Files.createFile(testFilePath);
-        }
+//        Path testFilePath = Paths.get("/home/daboggg/aqwerty/test.txt");
+//        if (!Files.exists(testFilePath.getParent())) {
+//            System.out.println(" not exist");
+//            Files.createDirectories(testFilePath.getParent());
+//            Files.createFile(testFilePath);
+//        }
+        System.out.println(getExtentionFile("kjhkjhkj.jhgjhg.kij"));
+    }
+
+    public static String getExtentionFile(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".")+1);
     }
 }
 
