@@ -46,6 +46,7 @@
           <open-note :editParam="{ noteId:note.id, title:note.title, text:note.text }"/>
 
         </v-card-actions>
+        <progress-loading/>
       </v-card>
     </v-row>
   </div>
@@ -56,6 +57,7 @@ import CreationNote from './dialog/CreationNote'
 import EditionNote from './dialog/EditionNote'
 import OpenNote from './dialog/OpenNote'
 import AddFile from './dialog/AddFile'
+import ProgressLoading from './ProgressLoading'
 export default {
   name: 'Note',
   props: ['notebookId', 'notes'],
@@ -63,7 +65,7 @@ export default {
     editParam: {}
   }),
   components: {
-    CreationNote, EditionNote, OpenNote, AddFile
+    CreationNote, EditionNote, OpenNote, AddFile, ProgressLoading
   }
 }
 </script>

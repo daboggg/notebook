@@ -57,7 +57,7 @@
                 <v-list-item
                   v-for="(file, i) in files"
                   :key="i"
-                  @click="downloadFile(file.id)"
+                  @click="downloadFile(file.id, file.fileName)"
                 >
                   <v-list-item-icon>
                     <v-icon>mdi-file-document-box</v-icon>
@@ -73,24 +73,27 @@
           </v-sheet>
         </v-col>
       </v-row>
+      <progress-loading/>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import ProgressLoading from '../ProgressLoading'
 export default {
   name: 'OpenNote',
   props: ['editParam'],
   data: () => ({
     dialog: false,
-    item: 0
+    item: 0,
+    skill: 20
   }),
   methods: {
     async getFiles () {
       await this.$store.dispatch('getAllFiles', this.editParam.noteId)
     },
-    async downloadFile (fileId) {
-      await this.$store.dispatch('downloadFile', fileId)
+    async downloadFile (fileId, fileName) {
+      await this.$store.dispatch('downloadFile', { fileId, fileName })
     }
     // async validate () {
     //   if (this.$refs.form.validate()) {
@@ -107,6 +110,7 @@ export default {
     //   }
     // }
   },
+  components: { ProgressLoading },
   computed: {
     files () {
       return this.$store.getters.getFiles

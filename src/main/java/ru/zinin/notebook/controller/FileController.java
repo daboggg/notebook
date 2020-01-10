@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import ru.zinin.notebook.exception.SomeException;
 import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.FileService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,22 +54,11 @@ public class FileController {
     }
 
 
-    @GetMapping("{fileName}")
+    @GetMapping("{fileId}")
     @CrossOrigin(methods = RequestMethod.GET)
-    public /*ResponseEntity<Resource>*/void download(@PathVariable Long fileName) throws IOException {
-        System.out.println(fileName);
+    public ResponseEntity<Resource> download(@PathVariable Long fileId) throws IOException, SomeException, InvalidToken {
 
+        return fileService.download(fileId);
 
-        /*File file = new File("/home/ubuntu/store/" + filename);
-        ByteArrayResource resource = null;
-        if (file.exists()) {
-            Path path = Paths.get(file.getAbsolutePath());
-            resource = new ByteArrayResource(Files.readAllBytes(path));
-        }
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .contentLength(file.length())
-                .body(resource);*/
     }
 }

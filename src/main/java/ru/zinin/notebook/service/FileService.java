@@ -2,6 +2,11 @@ package ru.zinin.notebook.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.zinin.notebook.component.TokenFactory;
@@ -98,5 +103,30 @@ public class FileService {
         }
 
         return fileRepo.getAllByNoteId(noteId);
+    }
+
+
+    public ResponseEntity<Resource> download(Long fileId) throws InvalidToken, SomeException, IOException {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        File fileFromDb = fileRepo.getOne(fileId);
+        if (!fileFromDb.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong");
+        }
+
+        java.io.File file = new java.io.File(partPath + fileId);
+        ByteArrayResource resource = null;
+        if (file.exists()) {
+            Path path = Paths.get(file.getAbsolutePath());
+            resource = new ByteArrayResource(Files.readAllBytes(path));
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileFromDb.getFileName())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .contentLength(file.length())
+                .body(resource);
     }
 }

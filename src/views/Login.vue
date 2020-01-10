@@ -37,6 +37,7 @@
               class="ma-5 mb-0 mt-10"
               color="amber"
               required
+              @keyup.enter="validate"
             ></v-text-field>
             <v-text-field
               v-model="password"
@@ -49,6 +50,7 @@
               class="mx-5 pb-0"
               color="amber"
               required
+              @keyup.enter="validate"
             ></v-text-field>
           </v-form>
           <v-card-actions>

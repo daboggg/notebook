@@ -10,7 +10,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     error: null,
-    message: null
+    message: null,
+    loaded: 0,
+    showProgress: false
   },
   mutations: {
     setError (state, error) {
@@ -24,13 +26,21 @@ export default new Vuex.Store({
     },
     clearMessage (state) {
       state.message = null
+    },
+    setLoaded (state, loaded) {
+      state.loaded = loaded
+    },
+    showProgress (state, show) {
+      state.showProgress = show
     }
   },
   actions: {
   },
   getters: {
     error: state => state.error,
-    message: state => state.message
+    message: state => state.message,
+    loaded: state => state.loaded,
+    showProgress: state => state.showProgress
   },
   modules: {
     auth, notebook, note, file
