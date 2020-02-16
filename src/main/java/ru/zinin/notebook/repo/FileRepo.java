@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface FileRepo extends JpaRepository<File, Long> {
     List<File> getAllByNoteId(Long noteId);
+
+    boolean existsByNoteId(Long id);
+
+    void deleteAllByNoteId(Long id);
 }

@@ -15,6 +15,10 @@ export default {
     editNote (state, note) {
       let index = state.notes.findIndex(n => n.id === note.id)
       state.notes.splice(index, 1, note)
+    },
+    deleteNote (state, note) {
+      let index = state.notes.findIndex(n => n.id === note.id)
+      state.notes.splice(index, 1)
     }
   },
   actions: {
@@ -83,6 +87,31 @@ export default {
         const data = await res.json()
         commit('editNote', data)
         commit('setMessage', 'note edited')
+      } catch (e) {
+        if (e.body.message === 'invalid token') {
+          await router.push('/login')
+          commit('logout')
+          commit('setError', 'sign in again')
+          throw e
+        } else {
+          commit('setError', e.body.message)
+          throw e
+        }
+      }
+    },
+    async deleteNote ({ commit, getters }, id) {
+      try {
+        let res = await Vue.http.delete(`${ipEndPort}api/note/${id}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': getters.getToken
+            }
+          })
+        let data = await res.json()
+        commit('deleteNote', data)
+
+        commit('setMessage', 'note deleted')
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')

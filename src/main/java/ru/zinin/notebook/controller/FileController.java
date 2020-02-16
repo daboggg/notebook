@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.zinin.notebook.exception.InvalidToken;
 import ru.zinin.notebook.exception.SomeException;
+import ru.zinin.notebook.model.File;
 import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.FileService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,5 +60,32 @@ public class FileController {
 
         return fileService.download(fileId);
 
+    }
+
+    @PutMapping
+    @CrossOrigin(methods = RequestMethod.PUT)
+    @JsonView(Views.File_id_fileName.class)
+    public ResponseEntity<File> changeFileName(@RequestBody File file) throws SomeException, InvalidToken {
+        return fileService.changeFileName(file);
+    }
+
+    @DeleteMapping("{id}")
+    @CrossOrigin(methods = RequestMethod.DELETE)
+    @JsonView(Views.File_id_fileName.class)
+    public ResponseEntity<File> deleteFiles(@PathVariable Long id) throws SomeException, InvalidToken {
+        return fileService.deleteFiles(id);
+    }
+
+    @GetMapping("/check")
+    @CrossOrigin(methods = RequestMethod.GET)
+    public boolean isEmpty(@RequestParam Long noteId) throws InvalidToken {
+        return fileService.isEmpty(noteId);
+    }
+
+    @DeleteMapping("/all/{noteId}")
+    @CrossOrigin(methods = RequestMethod.DELETE)
+    @JsonView(Views.File_id_fileName.class)
+    public boolean deleteAllByNoteId(@PathVariable Long noteId) throws InvalidToken {
+        return fileService.deleteAllByNoteId(noteId);
     }
 }

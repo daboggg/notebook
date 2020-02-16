@@ -40,37 +40,44 @@
             color="gray darken-2"
             class="pa-5"
           >
-            <div class="title">Имя записи:</div>
-            <div class="my-4 ml-10 subtitle-1">{{ editParam.title }}</div>
+            <v-card elevation="5" class="mt-3">
+              <v-card-title>Имя записи:</v-card-title>
+              <v-card-text class="subtitle-1">{{ editParam.title }}</v-card-text>
+              <v-divider class="my-3"/>
+              <v-card-title>Текст записи:</v-card-title>
+              <v-card-text class="subtitle-1">{{ editParam.text }}</v-card-text>
+            </v-card>
+<!--            <div class="title"></div>-->
+<!--            <div class="my-4 ml-10 subtitle-1">{{ editParam.title }}</div>-->
+<!--            <v-divider></v-divider>-->
+<!--            <div class="title">Текст записи:</div>-->
+<!--            <div class="my-4 ml-10 subtitle-1">{{ editParam.text }}</div>-->
             <v-divider></v-divider>
-            <div class="title">Текст записи:</div>
-            <div class="my-4 ml-10 subtitle-1">{{ editParam.text }}</div>
-            <v-divider></v-divider>
-            <div class="title">Список файлов:</div>
 
-            <v-list
-              nav
-              dense
-              class="mt-4"
-            >
-              <v-list-item-group v-model="item" color="primary">
-                <v-list-item
-                  v-for="(file, i) in files"
-                  :key="i"
-                  @click="downloadFile(file.id, file.fileName)"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-file-document-box</v-icon>
-                  </v-list-item-icon>
+<!--            <v-list-->
+<!--              nav-->
+<!--              dense-->
+<!--              class="mt-4"-->
+<!--            >-->
+<!--              <v-list-item-group v-model="item" color="primary">-->
+<!--                <v-list-item-->
+<!--                  v-for="(file, i) in files"-->
+<!--                  :key="i"-->
+<!--                  @click="downloadFile(file.id, file.fileName)"-->
+<!--                >-->
+<!--                  <v-list-item-icon>-->
+<!--                    <v-icon>mdi-file-document-box</v-icon>-->
+<!--                  </v-list-item-icon>-->
 
-                  <v-list-item-content>
-                    <v-list-item-title v-text="file.fileName"></v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-
+<!--                  <v-list-item-content>-->
+<!--                    <v-list-item-title v-text="file.fileName"></v-list-item-title>-->
+<!--                  </v-list-item-content>-->
+<!--                </v-list-item>-->
+<!--              </v-list-item-group>-->
+<!--            </v-list>-->
+            <file-table class="mt-6" :files="files"/>
           </v-sheet>
+
         </v-col>
       </v-row>
       <progress-loading/>
@@ -80,6 +87,7 @@
 
 <script>
 import ProgressLoading from '../ProgressLoading'
+import FileTable from '../table/FileTable'
 export default {
   name: 'OpenNote',
   props: ['editParam'],
@@ -91,10 +99,10 @@ export default {
   methods: {
     async getFiles () {
       await this.$store.dispatch('getAllFiles', this.editParam.noteId)
-    },
-    async downloadFile (fileId, fileName) {
-      await this.$store.dispatch('downloadFile', { fileId, fileName })
     }
+    // async downloadFile (fileId, fileName) {
+    //   await this.$store.dispatch('downloadFile', { fileId, fileName })
+    // }
     // async validate () {
     //   if (this.$refs.form.validate()) {
     //     try {
@@ -110,7 +118,7 @@ export default {
     //   }
     // }
   },
-  components: { ProgressLoading },
+  components: { ProgressLoading, FileTable },
   computed: {
     files () {
       return this.$store.getters.getFiles

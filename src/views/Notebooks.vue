@@ -40,7 +40,7 @@
                 <v-spacer/>
                 <div align="right" justify="right">
                   <edition-notebook :editParam="{ id: notebook.id, notebookName: notebook.notebookName }"/>
-                  <v-icon large class="mt-2">mdi-delete</v-icon>
+                  <v-icon @click.stop="deleteNotebook(notebook.id)" large class="mt-2">mdi-delete</v-icon>
                 </div>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -70,6 +70,11 @@ export default {
     },
     async openNotebook (notebookId) {
       await this.$store.dispatch('getAllNotes', notebookId)
+    },
+    async deleteNotebook (notebookId) {
+      console.log(notebookId)
+      confirm('Хотите удалить блокнот со всеми записями и файлами?') &&
+      await this.$store.dispatch('deleteNotebook', notebookId)
     }
   },
   mounted () {

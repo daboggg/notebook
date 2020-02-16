@@ -10,6 +10,7 @@ import ru.zinin.notebook.model.Note;
 import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.NoteService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -43,5 +44,12 @@ public class NoteController {
     @JsonView(Views.IdTitleTextNotebookId.class)
     public ResponseEntity<Note> edit(@RequestBody Note note) throws InvalidToken, SomeException {
         return noteService.edit(note);
+    }
+
+    @DeleteMapping("{noteId}")
+    @CrossOrigin(methods = RequestMethod.DELETE)
+    @JsonView(Views.IdTitleTextNotebookId.class)
+    public ResponseEntity<Note> delete(@PathVariable Long noteId) throws SomeException, InvalidToken {
+        return noteService.delete(noteId);
     }
 }

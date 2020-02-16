@@ -6,7 +6,7 @@ export default {
     notebooks: []
   },
   mutations: {
-    getAllNotebooks (state, notebooks) {
+    setAllNotebooks (state, notebooks) {
       state.notebooks = notebooks
     },
     addNotebook (state, notebook) {
@@ -15,6 +15,11 @@ export default {
     editNotebook (state, notebook) {
       const idx = state.notebooks.findIndex(n => n.id === notebook.id)
       state.notebooks.splice(idx, 1, notebook)
+    },
+    deleteNotebook (state, notebook) {
+      const idx = state.notebooks.findIndex(n => n.id === notebook.id)
+      console.log('index: ' + idx)
+      state.notebooks.splice(idx, 1)
     }
   },
   actions: {
@@ -28,7 +33,7 @@ export default {
             }
           })
         const data = await res.json()
-        commit('getAllNotebooks', data)
+        commit('setAllNotebooks', data)
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')
@@ -80,6 +85,55 @@ export default {
         const data = await res.json()
         commit('editNotebook', data)
         commit('setMessage', 'notepad edited')
+      } catch (e) {
+        if (e.body.message === 'invalid token') {
+          await router.push('/login')
+          commit('logout')
+          commit('setError', 'sign in again')
+          throw e
+        } else {
+          commit('setError', e.body.message)
+          throw e
+        }
+      }
+    },
+    async deleteNotebook ({ commit, getters }, notebookId) {
+      try {
+        const res = await Vue.http.get(`${ipEndPort}api/note?notebookId=${notebookId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': getters.getToken
+            }
+          })
+        const data = await res.json()
+        for (let item of data) {
+          console.log(item.id)
+          await Vue.http.delete(`${ipEndPort}api/file/all/${item.id}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Token': getters.getToken
+              }
+            })
+          await Vue.http.delete(`${ipEndPort}api/note/${item.id}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Token': getters.getToken
+              }
+            })
+        }
+        let result = await Vue.http.delete(`${ipEndPort}api/notebook/${notebookId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': getters.getToken
+            }
+          })
+        let dat = await result.json()
+        commit('deleteNotebook', dat)
+        commit('setMessage', 'notebook deleted')
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')

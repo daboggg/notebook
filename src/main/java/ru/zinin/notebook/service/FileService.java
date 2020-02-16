@@ -17,6 +17,7 @@ import ru.zinin.notebook.model.Note;
 import ru.zinin.notebook.repo.FileRepo;
 import ru.zinin.notebook.repo.NoteRepo;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -128,5 +129,63 @@ public class FileService {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .contentLength(file.length())
                 .body(resource);
+    }
+
+    public ResponseEntity<File> changeFileName(File file) throws InvalidToken, SomeException {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        File fileFromDb = fileRepo.getOne(file.getId());
+        if (!fileFromDb.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong");
+        }
+        fileFromDb.setFileName(file.getFileName());
+        fileFromDb.setFileExtension(getExtentionFile(file.getFileName()));
+        return ResponseEntity.ok(fileRepo.save(fileFromDb));
+    }
+
+    public ResponseEntity<File> deleteFiles(Long id) throws InvalidToken, SomeException {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        File fileFromDb = fileRepo.getOne(id);
+        if (!fileFromDb.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong");
+        }
+
+        java.io.File delFile = new java.io.File(partPath + id);
+        if (delFile.exists()) {
+            delFile.delete();
+        }
+
+        fileRepo.delete(fileFromDb);
+        return ResponseEntity.ok(fileFromDb);
+    }
+
+    public boolean isEmpty(Long noteId) throws InvalidToken {
+        return fileRepo.existsByNoteId(noteId);
+    }
+
+    @Transactional
+    public boolean deleteAllByNoteId(Long noteId) throws InvalidToken {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        List<File> allFilesByNoteId = fileRepo.getAllByNoteId(noteId);
+        for (File file : allFilesByNoteId) {
+            java.io.File delFile = new java.io.File(partPath + file.getId());
+            if (delFile.exists()) {
+                delFile.delete();
+            }
+        }
+        fileRepo.deleteAllByNoteId(noteId);
+
+        return true;
     }
 }

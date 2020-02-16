@@ -73,4 +73,19 @@ public class NoteService {
 
         return ResponseEntity.ok(noteRepo.save(noteById));
     }
+
+    public ResponseEntity<Note> delete(Long noteId) throws InvalidToken, SomeException {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        Note noteFromDb = noteRepo.getById(noteId);
+        if (!noteFromDb.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong");
+        }
+
+        noteRepo.delete(noteFromDb);
+        return ResponseEntity.ok(noteFromDb);
+    }
 }

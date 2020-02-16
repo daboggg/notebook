@@ -32,7 +32,7 @@
 
           <edition-note :editParam="{ noteId:note.id, title:note.title, text:note.text }"/>
 
-          <v-btn icon>
+          <v-btn icon @click="deleteNote(note.id)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
 
@@ -58,6 +58,8 @@ import EditionNote from './dialog/EditionNote'
 import OpenNote from './dialog/OpenNote'
 import AddFile from './dialog/AddFile'
 import ProgressLoading from './ProgressLoading'
+import Vue from 'vue'
+const ipEndPort = process.env.VUE_APP_SERVERIPENDPORT
 export default {
   name: 'Note',
   props: ['notebookId', 'notes'],
@@ -66,6 +68,22 @@ export default {
   }),
   components: {
     CreationNote, EditionNote, OpenNote, AddFile, ProgressLoading
+  },
+  methods: {
+    async deleteNote (noteId) {
+      let res = await Vue.http.get(`${ipEndPort}api/file/check?noteId=${noteId}`)
+      let isExist = await res.json()
+      if (isExist) {
+        confirm('У этой записи список файлов не пуст, все равно удалить?') &&
+        await this.$store.dispatch('deleteAllFilesByNoteId', noteId)
+        await this.$store.dispatch('deleteNote', noteId)
+      } else {
+        console.log('net')
+        confirm('Подтвердите удаление') &&
+        await this.$store.dispatch('deleteNote', noteId)
+      }
+      // console.log(isExist);
+    }
   }
 }
 </script>

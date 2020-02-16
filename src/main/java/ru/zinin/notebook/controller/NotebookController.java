@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.zinin.notebook.exception.InvalidToken;
 import ru.zinin.notebook.exception.SomeException;
+import ru.zinin.notebook.model.Note;
 import ru.zinin.notebook.model.Notebook;
 import ru.zinin.notebook.model.Views;
 import ru.zinin.notebook.service.NotebookService;
@@ -46,5 +47,12 @@ public class NotebookController {
             @PathVariable String notebookName
             ) throws InvalidToken, SomeException {
         return notebookService.edit(notebook, notebookName);
+    }
+
+    @DeleteMapping("{notebookId}")
+    @CrossOrigin(methods = RequestMethod.DELETE)
+    @JsonView(Views.NotebookIdNotebookName.class)
+    public ResponseEntity<Notebook> delete(@PathVariable Long notebookId) throws SomeException, InvalidToken {
+        return notebookService.delete(notebookId);
     }
 }

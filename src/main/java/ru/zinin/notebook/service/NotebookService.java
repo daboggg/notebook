@@ -61,4 +61,19 @@ public class NotebookService {
         Notebook notebookFromDb = notebookRepo.save(notebook);
         return ResponseEntity.ok(notebookFromDb);
     }
+
+    public ResponseEntity<Notebook> delete(Long notebookId) throws InvalidToken, SomeException {
+        if (!tokenFactory.isValidToken()) {
+            throw new InvalidToken();
+        }
+        tokenFactory.updateTimeValidityToken();
+
+        Notebook notebookFromDb = notebookRepo.getOne(notebookId);
+        if (!notebookFromDb.getUserId().equals(tokenFactory.getUserId())) {
+            throw new SomeException("userId wrong!");
+        }
+
+        notebookRepo.delete(notebookFromDb);
+        return ResponseEntity.ok(notebookFromDb);
+    }
 }

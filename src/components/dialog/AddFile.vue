@@ -21,36 +21,44 @@
         <v-icon @click="dialog = false">close</v-icon>
       </v-app-bar>
 
-      <v-file-input
-        color="amber"
-        class="mx-5 mt-5"
-        v-model="files"
-        counter
-        label="File input"
-        multiple
-        placeholder="Выберите ваши файлы"
-        prepend-icon="mdi-paperclip"
-        outlined
-        :show-size="1000"
+      <v-form
+        ref="form"
+        v-model="valid"
+        lazy-validation
+        @submit.prevent
       >
-        <template v-slot:selection="{ index, text }">
-          <v-chip
-            v-if="index < 2"
-            color="amber"
-            label
-            small
-          >
-            {{ text }}
-          </v-chip>
+        <v-file-input
+          color="amber"
+          class="mx-5 mt-5"
+          v-model="files"
+          :rules="filesRules"
+          counter
+          label="File input"
+          multiple
+          placeholder="Выберите ваши файлы"
+          prepend-icon="mdi-paperclip"
+          outlined
+          :show-size="1000"
+        >
+          <template v-slot:selection="{ index, text }">
+            <v-chip
+              v-if="index < 2"
+              color="amber"
+              label
+              small
+            >
+              {{ text }}
+            </v-chip>
 
-          <span
-            v-else-if="index === 2"
-            class="overline grey--text text--darken-3 mx-2"
-          >
-        +{{ files.length - 2 }} File(s)
-      </span>
-        </template>
-      </v-file-input>
+            <span
+              v-else-if="index === 2"
+              class="overline grey--text text--darken-3 mx-2"
+            >
+              +{{ files.length - 2 }} File(s)
+            </span>
+          </template>
+        </v-file-input>
+      </v-form>
 
       <v-card-actions>
         <v-spacer/>
@@ -70,41 +78,41 @@
 </template>
 
 <script>
+const maxFileSize = +process.env.VUE_APP_MAXFILESIZE
 export default {
   name: 'AddFile',
   props: ['noteId'],
   data: () => ({
     dialog: false,
-    files: null
+    valid: true,
+    files: [],
+    filesRules: [
+      v => v.length > 0 || 'поле не может быть пустым',
+      v => {
+        for (let item of v) {
+          if (item.size > maxFileSize) {
+            return `один или несколько фалов больше ${maxFileSize}Kb`
+          }
+        }
+        return true
+      }
+    ]
   }),
   methods: {
     async validate () {
-      if (this.files) {
+      if (this.$refs.form.validate()) {
         try {
           await this.$store.dispatch('addFiles', {
             files: this.files, noteId: this.noteId
+          }).then(res => {
+            this.files = []
+            this.$refs.form.reset()
+            this.$store.commit('setMessage', 'file or files uploaded')
           })
-          this.$refs.form.reset()
-          this.dialog = false
         } catch (e) {}
+        this.dialog = false
       }
-      this.dialog = false
-    //   if (this.$refs.form.validate()) {
-    //     try {
-    //       await this.$store.dispatch('editNotebook', {
-    //         id: this.editParam.id,
-    //         notebookName: this.notebookName
-    //       })
-    //       this.$refs.form.reset()
-    //       this.$refs.form.resetValidation()
-    //       this.dialog = false
-    //     } catch (e) {
-    //     }
-    //   }
     }
-  },
-  mounted () {
-    // this.notebookName = this.editParam.notebookName
   }
 }
 </script>

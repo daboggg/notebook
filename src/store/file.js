@@ -11,6 +11,15 @@ export default {
     },
     setFiles (state, files) {
       state.files = files
+    },
+    changeFileName (state, file) {
+      let index = state.files.findIndex(f => f.id === file.id)
+      console.log('index: ' + index)
+      state.files.splice(index, 1, file)
+    },
+    deleteFile (state, file) {
+      let index = state.files.findIndex(f => f.id === file.id)
+      state.files.splice(index, 1)
     }
   },
   actions: {
@@ -31,13 +40,10 @@ export default {
           uploadProgress: function (event) {
             commit('showProgress', true)
             commit('setLoaded', event.loaded / (event.total / 100))
-            // console.log(e.lengthComputable)
-            // console.log(e.loaded)
           }
         })
         commit('showProgress', false)
         let data = await res.json()
-        console.log(data)
         return data
       } catch (e) {
         if (e.body.message === 'invalid token') {
@@ -88,14 +94,9 @@ export default {
           downloadProgress: function (event) {
             commit('showProgress', true)
             commit('setLoaded', event.loaded / (event.total / 100))
-            // console.log(event.lengthComputable)
-            // console.log(event.loaded)
-            // console.log(event.total)
-            // console.log(event.loaded / (event.total / 100))
           }
         })
         commit('showProgress', false)
-        // console.log(res.headers)
 
         let url = window.URL.createObjectURL(new Blob([res.data]))
         let link = document.createElement('a')
@@ -103,17 +104,87 @@ export default {
         link.setAttribute('download', fileName)
         document.body.appendChild(link)
         link.click()
-
-        // let blob = new Blob([res.data], { type: res.headers.get('content-type') })
-        // let link = document.createElement('a')
-        // link.href = window.URL.createObjectURL(blob)
-        // link.download = 'ghjk'
-        // link.click()
-
-        // console.log(blob)
+      } catch (e) {
+        if (e.body.message === 'invalid token') {
+          await router.push('/login')
+          commit('logout')
+          commit('setError', 'sign in again')
+          throw e
+        } else {
+          commit('setError', e.body.message)
+          throw e
+        }
+      }
+    },
+    async changeFileName ({ commit, getters }, editedItem) {
+      try {
+        let res = await Vue.http.put(`${ipEndPort}api/file`,
+          JSON.stringify(editedItem),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': getters.getToken
+            }
+          })
+        commit('setMessage', 'changed file name')
+        let data = await res.json()
+        console.log(data)
+        commit('changeFileName', data)
+        return data
+      } catch (e) {
+        if (e.body.message === 'invalid token') {
+          await router.push('/login')
+          commit('logout')
+          commit('setError', 'sign in again')
+          throw e
+        } else {
+          commit('setError', e.body.message)
+          throw e
+        }
+      }
+    },
+    async deleteFiles ({ commit, getters }, filesId) {
+      try {
+        for (let id of filesId) {
+          let res = await Vue.http.delete(`${ipEndPort}api/file/${id}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Token': getters.getToken
+              }
+            })
+          let data = await res.json()
+          commit('deleteFile', data)
+        }
+        commit('setMessage', 'file or files deleted')
         // let data = await res.json()
-        // commit('setFiles', data)
-        // console.log(res)
+        // console.log(data)
+        // return data
+      } catch (e) {
+        if (e.body.message === 'invalid token') {
+          await router.push('/login')
+          commit('logout')
+          commit('setError', 'sign in again')
+          throw e
+        } else {
+          commit('setError', e.body.message)
+          throw e
+        }
+      }
+    },
+    async deleteAllFilesByNoteId ({ commit, getters }, noteId) {
+      try {
+        let res = await Vue.http.delete(`${ipEndPort}api/file/all/${noteId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Token': getters.getToken
+            }
+          })
+        let data = await res.json()
+        // let data = await res.json()
+        // console.log(data)
+        return data
       } catch (e) {
         if (e.body.message === 'invalid token') {
           await router.push('/login')
